@@ -1,12 +1,9 @@
-
-import type { AppProps } from 'next/app'
-
 export default function App() {
   return <div>
-    <h1>HELLO WORLD</h1>
+    <h1>POKEMON LEDGERS</h1>
+    <h2>FAN PROJECT MADE WITH NEXT.JS v13</h2>
     <ul>
-      <li><a href='/workers'>To Workers</a></li>
-
+      <li><a href='/pokemon'>To Pokemon</a></li>
     </ul>
   </div>
 

@@ -1,37 +1,41 @@
 'use client';
 
 import React, { useState, useEffect } from "react"
-import type { ColumnsType } from 'antd/es/table'
+import { RightOutlined, LeftOutlined, HomeOutlined, AppstoreOutlined } from '@ant-design/icons';
 import Link from 'next/link';
-import PKTable from './pktable'
-import { List } from "antd";
+import { AutoComplete, Breadcrumb, Button, Card, Input, List, Select, SelectProps, Skeleton, Space } from "antd";
 
-async function getPokemons() {
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/`, { cache: 'no-store' });
+async function getPokemons(url: string, limit: number, offset: number) {
+    const res = await fetch(`${url}?offset=${offset}&limit=${limit}`, { cache: 'no-store' });
     const data = await res.json();
     return data;
 }
 
-async function getPokemon(id: string) {
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`, { cache: 'no-store' });
-    const data = await res.json();
-    return data;
-}
 
-export default function PokemonPage() {
-    const [pokemons, setPokemons] = useState({ results: [], next: null, previous: null, limit: 20});
+
+export default function ListPage() {
+    const [pokemons, setPokemons] = useState({ results: [], next: null, previous: null, count: 0 });
+    const [list, setList] = useState([]);
+    const [url, setUrl] = useState('https://pokeapi.co/api/v2/pokemon/');
+    const [limit, setLimit] = useState(20);
+    const [offset, setOfsset] = useState(0);
+    const [options, setOptions] = useState<SelectProps<object>['options']>([]);
+    const [load, setLoad] = useState(0);
 
     useEffect(() => {
         async function fetchData() {
             try {
-                const data = await getPokemons();
+                const data = await getPokemons(url, limit, offset);
                 setPokemons(data);
+                const data_list = await getPokemons(url, 1154, 20);
+                setList(data_list.results.map((r: any) => r.name));
+                setLoad(1);
             } catch (err) {
                 console.log(err);
             }
         }
         fetchData();
-    }, []);
+    }, [limit, offset]);
 
     interface DataType {
         key: string;
@@ -40,7 +44,7 @@ export default function PokemonPage() {
         i: number;
     };
 
-    let converted = pokemons.results.map((r: any, i : number) => {
+    let converted = pokemons.results.map((r: any, i: number) => {
         return {
             key: r.name,
             name: r.name,
@@ -51,17 +55,77 @@ export default function PokemonPage() {
 
     const data: DataType[] = converted;
 
-    return <div>
-        <h1>POKEMON</h1>
-        <div>
-            <List
-                size="small"
-                header={<div>Count: {pokemons.limit}</div>}
-                footer={<div>Next: {pokemons.next ?? ''}, Previous: {pokemons.previous ?? ''}</div>}
-                bordered
-                dataSource={data}
-                renderItem={(item: any) => <List.Item><Link href={`/pokemon/${item.name}`}>{item.i+1} {item.name}</Link></List.Item>}
+    const searchResult = (query: string) =>
+        list.filter((f: string) => (f).toUpperCase().includes(query.toUpperCase()))
+            .map((name: string, idx: number) => {
+                const category = `${name.toUpperCase()}`;
+                return {
+                    value: category,
+                    label: (
+                        <div style={{ display: 'flex', justifyContent: 'space-between', }} >
+                            <span>
+                                <Link href={`/pokemon/${name}`}>
+                                    {(name).toUpperCase()}
+                                </Link>
+                            </span>
+                        </div>
+                    ),
+                };
+            });
+
+    let BTNS_COMPONENT = () => {
+        return <Space direction="horizontal">
+            <Button type="primary" icon={<LeftOutlined />} onClick={() => setOfsset(offset - limit)} disabled={offset < limit}>Prev</Button>
+            <Select
+                defaultValue={20}
+                style={{ width: 150 }}
+                onChange={setLimit}
+                options={[
+                    { value: 20, label: 'Limit 20', },
+                    { value: 48, label: 'Limit 48', },
+                    { value: 96, label: 'Limit 96', },
+                    { value: 512, label: 'Limit 512', },
+                    { value: pokemons.count, label: `Limit All (${pokemons.count})`, },
+                ]}
             />
+            <Button type="primary" icon={false} onClick={() => setOfsset(offset + limit)} disabled={offset + limit >= pokemons.count}>Next <RightOutlined /></Button>
+            <AutoComplete
+                dropdownMatchSelectWidth={252}
+                style={{ width: 300 }}
+                options={options}
+                onSearch={Search}
+                placeholder="Search pokemon..."
+            >
+            </AutoComplete>
+
+        </Space>
+    }
+
+    function Search(value: string) {
+        setOptions(value ? searchResult(value) : [])
+    }
+
+    return <div>
+        <Breadcrumb>
+            <Breadcrumb.Item href="/" className="breadcrums">
+                <HomeOutlined />
+            </Breadcrumb.Item>
+            <Breadcrumb.Item href="/pokemon" className="breadcrums">
+                <span><AppstoreOutlined /> Pokemon List</span>
+            </Breadcrumb.Item>
+        </Breadcrumb>
+
+        <div style={{ marginBlock: '20px' }}>
+            {BTNS_COMPONENT()}
         </div>
+
+        {load == 0 ? <Skeleton active /> : null}
+        {load == 1 ?
+            <Card title={<div><h3>LIST OF POKEMON</h3></div>}>
+                {data.map(d => {
+                    return <Card.Grid style={{ width: '25%', textAlign: 'center', }} ><Link href={`/pokemon/${d.name}`}>{(d.name).toUpperCase()}</Link></Card.Grid>
+                })}
+            </Card>
+            : null}
     </div>
 }

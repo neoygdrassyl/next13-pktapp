@@ -1,5 +1,5 @@
 "use client";
-//import '../styles/globals.css'
+import '../styles/globals.css'
 import React from 'react';
 import { Layout, Menu } from 'antd';
 import Link from 'next/link';

@@ -100,7 +100,6 @@ export default function PokemonPage({ params }: any) {
                     <List
                         size="small"
                         header={<div><b>#{pokemon.order}. {pokemon.name.toUpperCase()}</b></div>}
-                        footer={<div>Return</div>}
                         bordered
                     >
                         <List.Item>Species: <strong>{tidyText(pokemon.species.name)}</strong></List.Item>
@@ -125,12 +124,12 @@ export default function PokemonPage({ params }: any) {
                         </Collapse>
 
                         <Collapse defaultActiveKey={['1']}>
-                            <Panel header={<><strong>Stats</strong> <i style={{ color: '#8c8c8c' }}>| Total: {pokemon.stats.reduce((prev, next) =>{ return prev += next.base_stat}, 0)} | Average: {(pokemon.stats.reduce((prev, next) =>{ return prev += next.base_stat}, 0) / 6).toFixed(2)} |</i></>} key="0">
+                            <Panel header={<><strong>Stats</strong> <i style={{ color: '#8c8c8c' }}>| Total: {pokemon.stats.reduce((prev, next) => { return prev += next.base_stat }, 0)} | Average: {(pokemon.stats.reduce((prev, next) => { return prev += next.base_stat }, 0) / 6).toFixed(2)} |</i></>} key="0">
                                 {pokemon.stats.map((item, index) => <>
                                     <List.Item><strong>{tidyText(item.stat.name)}: {item.base_stat}</strong> <i style={{ color: '#8c8c8c' }}> | Effort: {item.effort} |</i>
-                                    <Progress percent={item.base_stat / 255 * 100} showInfo={false} strokeColor={{ '0%': '#108ee9', '100%': '#87d068'}} />
+                                        <Progress percent={item.base_stat / 255 * 100} showInfo={false} strokeColor={{ '0%': '#108ee9', '100%': '#87d068' }} />
                                     </List.Item>
-                                    
+
                                 </>)}
                             </Panel>
                         </Collapse>
@@ -140,19 +139,23 @@ export default function PokemonPage({ params }: any) {
                 <Col span={12}>
                     <Row gutter={[16, 16]}>
                         <Col span={6}>
-                            <Link href={pokemon.sprites.front_default} target="_blank">
-                                <Card hoverable cover={<img alt="Front" src={pokemon.sprites.front_default} />} >
-                                    <Meta title="Front View (1)" />
-                                </Card>
-                            </Link>
+                            {pokemon.sprites.front_default ?
+                                <Link href={pokemon.sprites.front_default} target="_blank">
+                                    <Card hoverable cover={<img alt="Front" src={pokemon.sprites.front_default} />} >
+                                        <Meta title="Front View (1)" />
+                                    </Card>
+                                </Link>
+                                : null}
 
                         </Col>
                         <Col span={6}>
-                            <Link href={pokemon.sprites.back_default} target="_blank">
-                                <Card hoverable cover={<img alt="Back" src={pokemon.sprites.back_default} />} >
-                                    <Meta title="Back View (1)" />
-                                </Card>
-                            </Link>
+                            {pokemon.sprites.back_default ?
+                                <Link href={pokemon.sprites.back_default} target="_blank">
+                                    <Card hoverable cover={<img alt="Back" src={pokemon.sprites.back_default} />} >
+                                        <Meta title="Back View (1)" />
+                                    </Card>
+                                </Link>
+                                : null}
                         </Col>
                         <Col span={6}>
                             {pokemon.sprites.front_female ?
@@ -178,19 +181,23 @@ export default function PokemonPage({ params }: any) {
                     <br />
                     <Row gutter={[16, 16]}>
                         <Col span={6}>
-                            <Link href={pokemon.sprites.front_shiny} target="_blank">
-                                <Card hoverable cover={<img alt="Front" src={pokemon.sprites.front_shiny} />} >
-                                    <Meta title="Front Shiny View (1)" />
-                                </Card>
-                            </Link>
+                            {pokemon.sprites.front_shiny ?
+                                <Link href={pokemon.sprites.front_shiny} target="_blank">
+                                    <Card hoverable cover={<img alt="Front" src={pokemon.sprites.front_shiny} />} >
+                                        <Meta title="Front Shiny View (1)" />
+                                    </Card>
+                                </Link>
+                                : null}
 
                         </Col>
                         <Col span={6}>
-                            <Link href={pokemon.sprites.back_shiny} target="_blank">
-                                <Card hoverable cover={<img alt="Back" src={pokemon.sprites.back_shiny} />} >
-                                    <Meta title="Back Shiny View (1)" />
-                                </Card>
-                            </Link>
+                            {pokemon.sprites.back_shiny ?
+                                <Link href={pokemon.sprites.back_shiny} target="_blank">
+                                    <Card hoverable cover={<img alt="Back" src={pokemon.sprites.back_shiny} />} >
+                                        <Meta title="Back Shiny View (1)" />
+                                    </Card>
+                                </Link>
+                                : null}
                         </Col>
                         <Col span={6}>
                             {pokemon.sprites.front_shiny_female ?

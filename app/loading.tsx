@@ -1,7 +1,11 @@
 'use client';
 import React from 'react';
-import { Spin } from 'antd';
+import { Col, Row, Skeleton } from 'antd';
 
 export default function Loading() {
-    return  <Spin size="large" />
+    return <Row gutter={[40, 40]} justify="center">
+        <Col span={24}>
+            <Skeleton active />
+        </Col>
+    </Row>
 }
